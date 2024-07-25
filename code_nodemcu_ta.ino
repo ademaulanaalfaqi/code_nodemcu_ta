@@ -9,8 +9,8 @@ const char* ssid = "Bidang_Informatika_2.4G";
 const char* password = "informatika2022";
 
 // URL skrip PHP di server
-const char* serverFlow = "http://10.10.176.157/php_iot/insert_flow_rate.php";
-const char* serverPressure = "http://10.10.176.157/php_iot/insert_pressure_rate.php";
+const char* serverFlow = "http://10.10.176.157/php_esp_to_database/insert_flow_rate.php";
+const char* serverPressure = "http://10.10.176.157/php_esp_to_database/insert_pressure_rate.php";
 const char* id_sensor = "Debit-OaDIw";
 const char* id_sensor_tekanan = "Tek-E7ifE";
 const char* apiKeyFlow = "WF260204";
