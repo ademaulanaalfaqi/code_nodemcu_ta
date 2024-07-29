@@ -4,13 +4,13 @@
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
 
-// Ganti dengan SSID dan Password jaringan WiFi Anda
-const char* ssid = "Bidang_Informatika_2.4G";
-const char* password = "informatika2022";
+// SSID dan Password WiFi
+const char* ssid = "anu hehe";
+const char* password = "te adalah";
 
 // URL skrip PHP di server
-const char* serverFlow = "http://10.10.176.157/php_esp_to_database/insert_flow_rate.php";
-const char* serverPressure = "http://10.10.176.157/php_esp_to_database/insert_pressure_rate.php";
+const char* serverFlow = "http://192.168.43.181/php_esp_to_database/insert_flow_rate.php";
+const char* serverPressure = "http://192.168.43.181/php_esp_to_database/insert_pressure_rate.php";
 const char* id_sensor = "Debit-OaDIw";
 const char* id_sensor_tekanan = "Tek-E7ifE";
 const char* apiKeyFlow = "WF260204";
@@ -23,16 +23,9 @@ float flowRate = 0.0;
 float totalLitres = 0.0;
 unsigned long oldTime = 0;
 
-// Define the analog pin
+// Analog pin sensor water presssure
 #define SENSOR_PIN A0
 int sensorOffset = 0;
-
-// OLED display settings
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-#define OLED_RESET -1    // Reset pin # (or -1 if sharing Arduino reset pin)
-#define SCREEN_ADDRESS 0x3C
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 void ICACHE_RAM_ATTR pulseCounter() {
   pulseCount++;
@@ -42,17 +35,6 @@ void setup() {
   // Inisialisasi Serial Monitor
   Serial.begin(115200);
   delay(10);
-
-  // Inisialisasi OLED display
-  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;);
-  }
-  display.display();
-  delay(2000); // Pause for 2 seconds
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
 
   // Memulai koneksi ke WiFi
   Serial.println();
@@ -82,20 +64,8 @@ void setup() {
   // Inisialisasi variabel waktu
   oldTime = millis();
 
-  // Calibrate the sensor (read the sensor value with no pressure)
+  // Kalibrasi sensor water pressure
   sensorOffset = analogRead(SENSOR_PIN);
-  Serial.print("Sensor Offset (No Pressure): ");
-  Serial.println(sensorOffset);
-
-  // Tampilkan informasi awal di OLED
-  display.clearDisplay();
-  display.setCursor(0,0);
-  display.print("WiFi connected");
-  display.setCursor(0,10);
-  display.print("IP: ");
-  display.print(WiFi.localIP());
-  display.display();
-  delay(2000); // Pause for 2 seconds
 }
 
 void loop() {
@@ -108,7 +78,7 @@ void loop() {
     flowRate = ((1000.0 / (millis() - oldTime)) * pulseCount) / 4.5;
 
     // Calculate the total litres
-    totalLitres += (flowRate / 60); // LPM to litres per second
+    totalLitres += (flowRate / 60 / 1000);
     
     // Reset penghitung pulsa dan waktu
     pulseCount = 0;
@@ -130,23 +100,6 @@ void loop() {
     Serial.print("Pressure: ");
     Serial.print(actualPressureValue);
     Serial.println(" psi");
-
-    // Tampilkan data di OLED display
-    display.clearDisplay();
-    display.setCursor(0,0);
-    display.print("Flow rate:");
-    display.setCursor(0,10);
-    display.print(flowRate);
-    display.print(" L/min");
-    display.setCursor(0, 20);
-    display.print("Total liters:");
-    display.setCursor(0, 30);
-    display.print(totalLitres);
-    display.setCursor(0, 40);
-    display.print("Tekanan:");
-    display.setCursor(0, 50);
-    display.print(actualPressureValue);
-    display.display();
 
     // Aktifkan kembali interupsi
     attachInterrupt(digitalPinToInterrupt(flowSensorPin), pulseCounter, FALLING);
